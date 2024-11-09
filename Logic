@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ปริศนาเจ้าของสัตว์เลี้ยงที่ซ่อนอยู่?</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    h2 { text-align: center; }
+    .container { max-width: 800px; margin: 0 auto; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+    th, td { border: 1px solid black; padding: 8px; text-align: center; }
+    .btn { cursor: pointer; background-color: #f0f0f0; }
+    .btn:hover { background-color: #ddd; }
+    .clues { margin-bottom: 20px; }
+    .result { text-align: center; font-weight: bold; }
+    .question { margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>ปริศนาเจ้าของสัตว์เลี้ยงที่ซ่อนอยู่?</h2>
+  <p class="clues"><strong>เงื่อนงำ:</strong>
+    <ol>
+      <li>เจนอาศัยอยู่ในบ้านสีแดง</li>
+      <li>สัตว์เลี้ยงของคนที่อาศัยอยู่ในบ้านสีเขียวคือ แมว</li>
+      <li>โบว์ดื่มกาแฟ</li>
+      <li>สุนัขอาศัยอยู่ในบ้านสีเหลือง</li>
+      <li>บุคคลที่ดื่มนมอาศัยอยู่ในบ้านสีเขียว</li>
+      <li>คนที่อาศัยอยู่ในบ้านสีแดงดื่มชา</li>
+    </ol>
+  </p>
+
+  <table>
+    <tr>
+      <th>สีบ้าน</th>
+      <th>ชื่อคน</th>
+      <th>เครื่องดื่ม</th>
+      <th>สัตว์เลี้ยง</th>
+    </tr>
+    <tr>
+      <td>สีแดง</td>
+      <td class="btn" onclick="markCell(this, 'name')">-</td>
+      <td class="btn" onclick="markCell(this, 'drink')">-</td>
+      <td class="btn" onclick="markCell(this, 'pet')">-</td>
+    </tr>
+    <tr>
+      <td>สีเหลือง</td>
+      <td class="btn" onclick="markCell(this, 'name')">-</td>
+      <td class="btn" onclick="markCell(this, 'drink')">-</td>
+      <td class="btn" onclick="markCell(this, 'pet')">-</td>
+    </tr>
+    <tr>
+      <td>สีเขียว</td>
+      <td class="btn" onclick="markCell(this, 'name')">-</td>
+      <td class="btn" onclick="markCell(this, 'drink')">-</td>
+      <td class="btn" onclick="markCell(this, 'pet')">-</td>
+    </tr>
+  </table>
+
+  <div class="question">
+    <h3>คำถาม:</h3>
+    <ol>
+      <li>บุคคลใดเลี้ยงนก? 
+        <select id="question1">
+          <option value="">เลือกคำตอบ</option>
+          <option value="เจน">เจน</option>
+          <option value="โบว์">โบว์</option>
+          <option value="นุ่น">นุ่น</option>
+        </select>
+      </li>
+      <li>บุคคลใดเลี้ยงสุนัข? 
+        <select id="question2">
+          <option value="">เลือกคำตอบ</option>
+          <option value="เจน">เจน</option>
+          <option value="โบว์">โบว์</option>
+          <option value="นุ่น">นุ่น</option>
+        </select>
+      </li>
+    </ol>
+  </div>
+
+  <div class="result">
+    <button onclick="checkSolution()">ตรวจคำตอบ</button>
+    <p id="resultMessage"></p>
+  </div>
+</div>
+
+<script>
+  // ฟังก์ชันสำหรับการคลิกเซลล์
+  function markCell(cell, type) {
+    const values = {
+      name: ['เจน', 'นุ่น', 'โบว์'],
+      drink: ['กาแฟ', 'นม', 'ชา'],
+      pet: ['สุนัข', 'แมว', 'นก']
+    };
+
+    const currentValue = cell.innerHTML;
+    const index = values[type].indexOf(currentValue);
+    const nextValue = values[type][(index + 1) % 3];
+    cell.innerHTML = nextValue;
+  }
+
+  // ฟังก์ชันตรวจสอบคำตอบ
+  function checkSolution() {
+    const solution = {
+      'สีแดง': { name: 'เจน', drink: 'ชา', pet: 'นก' },
+      'สีเหลือง': { name: 'โบว์', drink: 'กาแฟ', pet: 'สุนัข' },
+      'สีเขียว': { name: 'นุ่น', drink: 'นม', pet: 'แมว' }
+    };
+
+    const rows = document.querySelectorAll("table tr");
+    let isCorrect = true;
+
+    // ตรวจสอบคำตอบของแต่ละแถว
+    for (let i = 1; i < rows.length; i++) {
+      const cells = rows[i].querySelectorAll("td");
+      const color = cells[0].textContent;
+
+      // รับคำตอบจากผู้เล่น
+      let userName = cells[1].textContent;
+      let userDrink = cells[2].textContent;
+      let userPet = cells[3].textContent;
+
+      // ตรวจสอบคำตอบกับเฉลย
+      if (userName !== solution[color].name || userDrink !== solution[color].drink || userPet !== solution[color].pet) {
+        isCorrect = false;
+        break;
+      }
+    }
+
+    // ตรวจสอบคำตอบของคำถาม
+    const question1Answer = document.getElementById("question1").value;
+    const question2Answer = document.getElementById("question2").value;
+
+    const correctAnswers = {
+      question1: 'เจน',
+      question2: 'โบว์'
+    };
+
+    if (question1Answer !== correctAnswers.question1 || question2Answer !== correctAnswers.question2) {
+      isCorrect = false;
+    }
+
+    // แสดงผลลัพธ์
+    const resultMessage = document.getElementById("resultMessage");
+    if (isCorrect) {
+      resultMessage.textContent = "ยินดีด้วย! คุณตอบถูกต้องแล้ว!";
+      resultMessage.style.color = "green";
+    } else {
+      resultMessage.textContent = "คำตอบไม่ถูกต้อง ลองอีกครั้ง!";
+      resultMessage.style.color = "red";
+    }
+  }
+</script>
+
+</body>
+</html>
